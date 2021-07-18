@@ -24,7 +24,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val contestsRepository = ContestsRepository(database)
 
-    val codeForcesUsers = usersRepository.users
+    val userAccounts = usersRepository.users
 
     val cList = contestsRepository.contests
 
@@ -58,21 +58,21 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun addCodeforcesUser(handle: String) {
+    private fun addCodeforcesUser(handle: String) {
         viewModelScope.launch {
             Log.i("MainViewModel", "Adding User using repository")
             usersRepository.addCodeForcesUser(handle)
         }
     }
 
-    fun addCodechefUser(handle: String) {
+    private fun addCodechefUser(handle: String) {
         viewModelScope.launch {
             Log.i("ChartViewModel", "Adding User using repository")
             usersRepository.addCodeChefUser(handle)
         }
     }
 
-    fun addPlatformUser(platform: String, handle: String) {
+    private fun addPlatformUser(platform: String, handle: String) {
         viewModelScope.launch {
             usersRepository.addPlatformUser(platform, handle)
         }
@@ -84,6 +84,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun onUserAdded() {
         _showPopup.value = false
+    }
+
+    private val _navigateToSettings = MutableLiveData<Boolean>()
+    val navigateToSettings: LiveData<Boolean>
+        get() = _navigateToSettings
+
+    fun onSettingsPressed() {
+        _navigateToSettings.value = true
+    }
+
+    fun onNavigateToSettingsComplete() {
+        _navigateToSettings.value = false
     }
 
     override fun onCleared() {

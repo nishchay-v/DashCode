@@ -12,8 +12,8 @@ interface UserRatingsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(vararg databaseUsers: DatabasePlatformUser)
 
-    @Delete
-    fun delete(databaseUser: DatabasePlatformUser)
+    @Query("delete from databaseplatformuser where handle = :handle")
+    fun deleteUser(handle: String)
 
     @Query("delete from DatabasePlatformUser")
     fun nukeTable()

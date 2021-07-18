@@ -10,6 +10,8 @@ import android.widget.Spinner
 import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dashcode.R
 import com.example.dashcode.databinding.AddUserPopupNewBinding
@@ -46,7 +48,7 @@ class MainFragment : Fragment() {
             isNestedScrollingEnabled = false
         }
 
-        viewModel.codeForcesUsers.observe(viewLifecycleOwner, {
+        viewModel.userAccounts.observe(viewLifecycleOwner, {
             it?.let {
                 chartAdapter.addItemsAndSubmitList(it)
             }
@@ -110,6 +112,15 @@ class MainFragment : Fragment() {
             it?.let {
                 if (it) popupDialogNew.show()
                 else popupDialogNew.dismiss()
+            }
+        })
+
+        viewModel.navigateToSettings.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                if(it) {
+                    findNavController().navigate(R.id.action_mainFragment_to_settingsFragment2)
+                    viewModel.onNavigateToSettingsComplete()
+                }
             }
         })
 

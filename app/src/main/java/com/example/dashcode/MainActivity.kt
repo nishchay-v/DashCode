@@ -21,10 +21,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
         setSupportActionBar(findViewById(R.id.toolbar))
-        //Disable default title on action bar (it's on left side)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-//        val navController = this.findNavController(R.id.nav_host_fragment)
-//        NavigationUI.setupActionBarWithNavController(this, navController)
     }
 
     //Inflate action bar
@@ -35,11 +32,9 @@ class MainActivity : AppCompatActivity() {
 
     // Handle clicking of action bar items
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        return NavigationUI.onNavDestinationSelected(item, require)
         return when(item.itemId) {
-            //TODO: implement settings
             R.id.settingsFragment -> {
-//                findNavController(R.id.settingsFragment).navigate(R.id.action_mainFragment_to_settingsFragment)
+                viewModel.onSettingsPressed()
                 true
             }
             R.id.add_button -> {

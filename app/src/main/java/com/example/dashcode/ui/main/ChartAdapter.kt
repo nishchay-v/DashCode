@@ -32,7 +32,7 @@ class ChartAdapter: ListAdapter<DataItem, RecyclerView.ViewHolder>(DiffCallback(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(holder) {
             is ViewHolder -> {
-                val chartItem = getItem(position) as DataItem.CodeForcesChartItem
+                val chartItem = getItem(position) as DataItem.AccountChartItem
                 holder.bind(chartItem.platformUser)
             }
         }
@@ -47,7 +47,7 @@ class ChartAdapter: ListAdapter<DataItem, RecyclerView.ViewHolder>(DiffCallback(
 
     override fun getItemViewType(position: Int): Int {
         return when(getItem(position)) {
-            is DataItem.CodeForcesChartItem -> ITEM_VIEW_TYPE_CODEFORCES
+            is DataItem.AccountChartItem -> ITEM_VIEW_TYPE_CODEFORCES
         }
     }
 
@@ -127,7 +127,7 @@ class ChartAdapter: ListAdapter<DataItem, RecyclerView.ViewHolder>(DiffCallback(
     fun addItemsAndSubmitList(list: List<PlatformUser>) {
         adapterScope.launch {
 
-            val items = list.map { DataItem.CodeForcesChartItem(it) }
+            val items = list.map { DataItem.AccountChartItem(it) }
 
             withContext(Dispatchers.Main) {
                 submitList(items)
@@ -144,13 +144,12 @@ class DiffCallback : DiffUtil.ItemCallback<DataItem>() {
     override fun areContentsTheSame(oldItem: DataItem, newItem: DataItem): Boolean {
         return oldItem == newItem
     }
-
 }
 
 sealed class DataItem {
     abstract val id: String
 
-    data class CodeForcesChartItem(val platformUser: PlatformUser) : DataItem() {
-        override val id = platformUser.handle
+    data class AccountChartItem(val platformUser: PlatformUser) : DataItem() {
+        override val id = "${platformUser.platform}/${platformUser.handle}"
     }
 }

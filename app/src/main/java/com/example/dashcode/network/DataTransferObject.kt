@@ -243,13 +243,17 @@ fun NetworkUserContestsContainer.asDomainModel(): List<UserContest> {
             continue
         }
 
+        val rc = item.ratingChange ?: item.newRating
+        var rcString = if (rc > 0) "+$rc"
+        else rc.toString()
+
         contests.add(
             UserContest(
                 id = item.contestId.toString(),
                 name = item.name,
                 rank = item.rank ?: 0,
                 newRating = item.newRating,
-                ratingChange = item.ratingChange?.toString() ?: item.newRating.toString(),
+                ratingChange = rcString,
                 updateTime = timeToSeconds(item.date)
             )
         )

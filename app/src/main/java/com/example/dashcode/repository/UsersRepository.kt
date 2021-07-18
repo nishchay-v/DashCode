@@ -67,5 +67,12 @@ class UsersRepository(private val database: AppDatabase) {
             }
         }
     }
+
+    suspend fun removeAccount (handle: String) {
+        withContext(Dispatchers.IO) {
+            database.userRatingsDao.deleteUser(handle)
+            Log.i("UserRepository", "User deleted")
+        }
+    }
 }
 
