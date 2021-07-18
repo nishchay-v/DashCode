@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/add_button"
+        android:contentDescription="@string/add_user"
+        android:icon="@drawable/outline_add_black_24"
+        android:title="@string/add_user"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/settingsFragment"
+        android:contentDescription="@string/settings"
+        android:icon="@drawable/outline_settings_black_24"
+        android:title="@string/settings"
+        app:showAsAction="ifRoom" />
+</menu>

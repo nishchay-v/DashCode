@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="contest"
+            type="com.example.dashcode.domain.CListContest" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/contest_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:text="@{contest.name}"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/platform_image"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Codeforces Round #671 (Div. 1,  based on Technocup 2020 Elimintion Round 1)" />
+
+        <ImageView
+            android:id="@+id/platform_image"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:platformIcon="@{contest.platform}"
+            tools:srcCompat="@drawable/ic_codeforces_colored" />
+
+        <TextView
+            android:id="@+id/contest_start_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:textSize="12sp"
+            app:dateText="@{contest.start}"
+            app:layout_constraintStart_toEndOf="@+id/platform_image"
+            app:layout_constraintTop_toBottomOf="@+id/contest_name"
+            tools:text="19 Februrary" />
+
+        <TextView
+            android:id="@+id/contest_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="8dp"
+            android:textSize="12sp"
+            app:contestDuration="@{contest.duration}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/platform_image"
+            app:layout_constraintTop_toBottomOf="@+id/contest_start_date"
+            tools:text="0 hours 0 mins" />
+
+        <TextView
+            android:id="@+id/contest_start_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:textSize="12sp"
+            app:timeText="@{contest.start}"
+            app:layout_constraintBaseline_toBaselineOf="@+id/contest_start_date"
+            app:layout_constraintStart_toEndOf="@+id/contest_start_date"
+            tools:text="1:30 PM" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
