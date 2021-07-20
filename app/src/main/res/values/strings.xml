@@ -10,6 +10,9 @@
     <string name="dashcode">DashCode</string>
     <string name="add_user">Add User</string>
     <string name="upcoming_contests">Upcoming Contests</string>
+    <string name="account_added">Account Added</string>
+    <string name="account_removed">Account Removed</string>
+    <string name="no_user">User not found</string>
 
     <string-array name="platforms_array">
         <item>Platform</item>

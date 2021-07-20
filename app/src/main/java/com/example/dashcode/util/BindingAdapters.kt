@@ -30,7 +30,7 @@ fun durationHours(view: TextView, seconds: Int) {
 @BindingAdapter("platformRank")
 fun getRank(view: TextView, user: PlatformUser) {
     view.text = getRank(user.platform, user.rating)
-    view.setBackgroundColor(getAccentColor(user.platform, user.rating))
+//    view.setBackgroundColor()
 }
 
 @BindingAdapter("dateText")

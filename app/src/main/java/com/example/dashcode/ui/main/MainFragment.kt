@@ -1,12 +1,16 @@
 package com.example.dashcode.ui.main
 
 import android.app.Dialog
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
@@ -17,6 +21,7 @@ import com.example.dashcode.R
 import com.example.dashcode.databinding.AddUserPopupNewBinding
 import com.example.dashcode.databinding.MainFragmentBinding
 import com.example.dashcode.util.SnapHelperOneByOne
+import com.google.android.material.snackbar.Snackbar
 
 class MainFragment : Fragment() {
 
@@ -33,6 +38,7 @@ class MainFragment : Fragment() {
         binding.lifecycleOwner = this
 
         binding.viewModel = viewModel
+
 
         //Recycler Views
 
@@ -56,7 +62,9 @@ class MainFragment : Fragment() {
 
         val cListManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
         binding.clistRecyclerview.layoutManager = cListManager
-        val cListAdapter = CListAdapter()
+        val cListAdapter = CListAdapter(CListAdapter.LinkClickListener { href ->
+            openLink(href)
+        })
         binding.clistRecyclerview.adapter = cListAdapter
 
         viewModel.cList.observe(viewLifecycleOwner, {
@@ -108,6 +116,19 @@ class MainFragment : Fragment() {
             viewModel.onUserAdded()
         }
 
+        viewModel.foundUser.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                if(it) {
+                    Log.i("MainFragment", "User Found")
+                    Snackbar.make(requireView(), R.string.account_added, Snackbar.LENGTH_LONG).show()
+                }
+                else {
+                    Log.i("MainFragment", "User NOT Found")
+                    Snackbar.make(requireView(), R.string.no_user, Snackbar.LENGTH_LONG).show()
+                }
+            }
+        })
+
         viewModel.showPopup.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) popupDialogNew.show()
@@ -127,4 +148,13 @@ class MainFragment : Fragment() {
         return binding.root
     }
 
+    private fun openLink(href: String) {
+        val openURL = Intent(Intent.ACTION_VIEW)
+        openURL.data = Uri.parse(href)
+        startActivity(openURL)
+    }
+
+    fun getColorRes(colorId: Int) {
+        ContextCompat.getColor(requireContext(), colorId)
+    }
 }

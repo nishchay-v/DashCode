@@ -1,19 +1,19 @@
 package com.example.dashcode.ui.main
 
+import android.content.Context
 import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dashcode.R
 import com.example.dashcode.databinding.ChartItemBinding
 import com.example.dashcode.domain.PlatformUser
-import com.example.dashcode.util.loadChartData
-import com.example.dashcode.util.CustomMarkerView
-import com.example.dashcode.util.EpochDayFormatter
-import com.example.dashcode.util.TimeFormatter
+import com.example.dashcode.util.*
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
@@ -26,8 +26,13 @@ import kotlinx.coroutines.withContext
 import java.lang.ClassCastException
 
 private const val ITEM_VIEW_TYPE_CODEFORCES = 0
+private lateinit var context: Context
 
 class ChartAdapter: ListAdapter<DataItem, RecyclerView.ViewHolder>(DiffCallback()) {
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        context = recyclerView.context
+    }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(holder) {
@@ -56,7 +61,7 @@ class ChartAdapter: ListAdapter<DataItem, RecyclerView.ViewHolder>(DiffCallback(
         fun bind(item: PlatformUser) {
 
             binding.platformUser = item
-
+            binding.platformRank.setTextColor(ContextCompat.getColor(context, getAccentColor(item.platform, item.rating)))
             val marker = CustomMarkerView(binding.ratingChart.context, R.layout.chart_marker_view)
 
             val chart = binding.ratingChart

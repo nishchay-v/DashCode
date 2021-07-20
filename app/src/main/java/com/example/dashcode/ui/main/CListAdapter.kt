@@ -14,7 +14,7 @@ import kotlinx.coroutines.withContext
 
 private const val ITEM_VIEW_TYPE_CONTEST = 0
 
-class CListAdapter : ListAdapter<ListItem, RecyclerView.ViewHolder>(ListDiffCallback()) {
+class CListAdapter(val clickListener: LinkClickListener) : ListAdapter<ListItem, RecyclerView.ViewHolder>(ListDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when(viewType) {
             ITEM_VIEW_TYPE_CONTEST -> ViewHolder.from(parent)
@@ -26,7 +26,7 @@ class CListAdapter : ListAdapter<ListItem, RecyclerView.ViewHolder>(ListDiffCall
         when(holder) {
             is ViewHolder -> {
                 val listItemContests = getItem(position) as ListItem.Contest
-                holder.bind(listItemContests.cListContest)
+                holder.bind(listItemContests.cListContest, clickListener)
             }
         }
     }
@@ -43,8 +43,9 @@ class CListAdapter : ListAdapter<ListItem, RecyclerView.ViewHolder>(ListDiffCall
     }
 
     class ViewHolder private constructor(private val binding: ContestItemBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: CListContest) {
+        fun bind(item: CListContest, clickListener: LinkClickListener) {
             binding.contest = item
+            binding.clickListener = clickListener
             //Always a good idea to do this as it can make sizing views a lil quicker
             binding.executePendingBindings()
         }
@@ -56,6 +57,10 @@ class CListAdapter : ListAdapter<ListItem, RecyclerView.ViewHolder>(ListDiffCall
                 return ViewHolder(binding)
             }
         }
+    }
+
+    class LinkClickListener(val clickListener: (href: String) -> Unit) {
+        fun onClick(contest: CListContest) = clickListener(contest.href)
     }
 }
 

@@ -14,6 +14,7 @@ import com.example.dashcode.R
 import com.example.dashcode.databinding.AccountListItemBinding
 import com.example.dashcode.databinding.FragmentAccountListBinding
 import com.example.dashcode.domain.PlatformUser
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,6 +36,7 @@ class AccountListFragment : Fragment() {
         binding.accountList.layoutManager = layoutManager
         val adapter = AccountListAdapter(AccountListAdapter.AccountDeleteListener { handle->
             viewModel.deleteUser(handle)
+            Snackbar.make(requireView(), R.string.account_removed, Snackbar.LENGTH_LONG).show()
         })
         binding.accountList.adapter = adapter
 

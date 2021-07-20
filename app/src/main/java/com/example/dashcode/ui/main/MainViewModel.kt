@@ -28,6 +28,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     val cList = contestsRepository.contests
 
+    val foundUser = usersRepository.foundUser
 
     // Load Contest List whenever app starts
     init {
@@ -84,6 +85,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun onUserAdded() {
         _showPopup.value = false
+        usersRepository.onAddUserComplete()
     }
 
     private val _navigateToSettings = MutableLiveData<Boolean>()

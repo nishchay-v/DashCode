@@ -7,6 +7,9 @@
         <variable
             name="contest"
             type="com.example.dashcode.domain.CListContest" />
+        <variable
+            name="clickListener"
+            type="com.example.dashcode.ui.main.CListAdapter.LinkClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -22,7 +25,7 @@
             android:layout_marginEnd="16dp"
             android:text="@{contest.name}"
             android:textSize="14sp"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/open_link"
             app:layout_constraintStart_toEndOf="@+id/platform_image"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Codeforces Round #671 (Div. 1,  based on Technocup 2020 Elimintion Round 1)" />
@@ -87,5 +90,18 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
+        <ImageView
+            android:id="@+id/open_link"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="16dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:onClick="@{() -> clickListener.onClick(contest)}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_baseline_open_in_new_24"
+            app:tint="@color/colorAccent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

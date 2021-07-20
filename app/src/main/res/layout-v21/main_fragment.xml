@@ -48,6 +48,7 @@
                 android:id="@+id/clist_recyclerview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 tools:itemCount="10"
                 tools:listitem="@layout/contest_item" />
         </LinearLayout>
