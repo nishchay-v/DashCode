@@ -1,7 +1,6 @@
 package com.example.dashcode.domain
 
 data class UserContest(
-    val id: String,
     val name: String,
     val updateTime: Int,
     val rank: Int,
@@ -29,14 +28,15 @@ data class CListContest(
 data class UserDetails(
     val handle: String,
     val name: String,
-    val accountId: Int,
+    val clistId: Int,
     val platform: String
 )
 
 data class PlatformUser(
+    val accountId: Int,
     val handle: String,
     val platform: String,
     val contests: List<UserContest>,
-    val rating: Int,
-    val ratingChange: String
+    val currentRating: Int,
+    val lastRatingChange: String
 )

@@ -1,23 +1,36 @@
 package com.example.dashcode.database
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import androidx.room.TypeConverter
-import androidx.room.TypeConverters
+import androidx.room.*
 import com.example.dashcode.domain.CListContest
 import com.example.dashcode.domain.PlatformUser
 import com.example.dashcode.domain.UserContest
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-
 
 @Entity
-@TypeConverters(GsonTypeConverters::class)
-data class DatabasePlatformUser constructor(
-    @PrimaryKey
+data class DatabaseAccount constructor(
+    @PrimaryKey(autoGenerate = true)
+    val accountId: Int = 0,
     val handle: String,
     val platform: String,
-    val contests: List<UserContest>
+)
+
+@Entity(primaryKeys = ["accountId", "contestId"])
+data class DatabaseAccountContests constructor(
+    val accountId: Int,
+    val contestId: String,
+    val name: String,
+    val updateTime: Int,
+    val rank: Int,
+    val oldRating: Int,
+    val newRating: Int
+)
+
+data class AccountWithContests(
+    @Embedded val account: DatabaseAccount,
+    @Relation(
+        parentColumn = "accountId",
+        entityColumn = "accountId"
+    )
+    val contests: List<DatabaseAccountContests>
 )
 
 @Entity
@@ -32,38 +45,36 @@ data class DatabaseContest constructor(
     val platform: String,
 )
 
-// Since we can't directly store list data type in Database, we need to convert them into list
-class GsonTypeConverters {
-    private val gson = Gson()
-
-    @TypeConverter
-    fun stringToContestsList(data: String?): List<UserContest>? {
-        if (data == null)
-            return listOf<UserContest>()
-
-        val type = object :TypeToken<List<UserContest>>(){}.type
-
-        return gson.fromJson<List<UserContest>>(data, type)
-    }
-
-    @TypeConverter
-    fun contestsListToString(list: List<UserContest>) : String {
-        return gson.toJson(list)
-    }
+fun DatabaseAccountContests.asDomainModel(): UserContest {
+    val rc = this.newRating - this.oldRating
+    return UserContest(
+        name = this.name,
+        updateTime = this.updateTime,
+        rank = this.rank,
+        newRating = this.newRating,
+        ratingChange = if (rc > 0) "+$rc" else rc.toString()
+    )
 }
 
-fun DatabasePlatformUser.asDomainModel() : PlatformUser =
-    PlatformUser(
-        handle = this.handle,
-        platform = this.platform,
-        rating = this.contests.last().newRating,
-        ratingChange = this.contests.last().ratingChange,
-        contests = this.contests
+fun AccountWithContests.asDomainModel() : PlatformUser {
+    val rc = if (contests.isNotEmpty()) {
+        (contests.last().newRating - contests.last().oldRating)
+    } else 0
+    val ratingChangeText = if (rc > 0) "+$rc" else rc.toString()
+    return PlatformUser(
+        accountId = this.account.accountId,
+        handle = this.account.handle,
+        platform = this.account.platform,
+        currentRating = if (contests.isNotEmpty()) {contests.last().newRating} else 0,
+        lastRatingChange = ratingChangeText,
+        contests = this.contests.map{
+            it.asDomainModel()
+        }.sortedBy { it.updateTime }
     )
-
+}
 
 fun DatabaseContest.asDomainModel() : CListContest =
-    CListContest (
+    CListContest(
         id = this.id,
         duration = this.duration,
         start = this.start,
@@ -71,4 +82,4 @@ fun DatabaseContest.asDomainModel() : CListContest =
         name = this.name,
         platform = this.platform,
         href = this.href
-        )
+    )

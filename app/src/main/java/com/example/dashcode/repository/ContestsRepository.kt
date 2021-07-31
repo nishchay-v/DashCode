@@ -7,7 +7,7 @@ import com.example.dashcode.database.AppDatabase
 import com.example.dashcode.database.asDomainModel
 import com.example.dashcode.domain.CListContest
 import com.example.dashcode.network.Network
-import com.example.dashcode.network.asDatabaseModel
+import com.example.dashcode.network.asDatabaseAccountModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
@@ -25,7 +25,7 @@ class ContestsRepository(private val database: AppDatabase) {
         withContext(Dispatchers.IO) {
             try {
                 val upcomingContests = Network.contestService.getContestsListAsync(20, startTime = timeNow).await()
-                database.upcomingContestsDao.insertAll(*upcomingContests.asDatabaseModel())
+                database.upcomingContestsDao.insertAll(*upcomingContests.asDatabaseAccountModel())
                 Log.i("ContestsRepository", "Contests Added to Database")
             }
             catch (e: Exception) {

@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -61,7 +60,7 @@ class ChartAdapter: ListAdapter<DataItem, RecyclerView.ViewHolder>(DiffCallback(
         fun bind(item: PlatformUser) {
 
             binding.platformUser = item
-            binding.platformRank.setTextColor(ContextCompat.getColor(context, getAccentColor(item.platform, item.rating)))
+            binding.platformRank.setTextColor(ContextCompat.getColor(context, getAccentColor(item.platform, item.currentRating)))
             val marker = CustomMarkerView(binding.ratingChart.context, R.layout.chart_marker_view)
 
             val chart = binding.ratingChart

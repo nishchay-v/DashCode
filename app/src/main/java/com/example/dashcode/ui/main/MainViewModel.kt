@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.example.dashcode.database.getDatabase
 import com.example.dashcode.repository.ContestsRepository
-import com.example.dashcode.repository.UsersRepository
+import com.example.dashcode.repository.AccountsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -20,15 +20,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val database = getDatabase(application)
 
-    private val usersRepository = UsersRepository(database)
+    private val accountsRepository = AccountsRepository(database)
 
     private val contestsRepository = ContestsRepository(database)
 
-    val userAccounts = usersRepository.users
+    val userAccounts = accountsRepository.accounts
 
     val cList = contestsRepository.contests
 
-    val foundUser = usersRepository.foundUser
+    val foundUser = accountsRepository.foundAccount
 
     // Load Contest List whenever app starts
     init {
@@ -62,20 +62,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun addCodeforcesUser(handle: String) {
         viewModelScope.launch {
             Log.i("MainViewModel", "Adding User using repository")
-            usersRepository.addCodeForcesUser(handle)
+            accountsRepository.addCodeForcesAccount(handle)
         }
     }
 
     private fun addCodechefUser(handle: String) {
         viewModelScope.launch {
             Log.i("ChartViewModel", "Adding User using repository")
-            usersRepository.addCodeChefUser(handle)
+            accountsRepository.addCodeChefAccount(handle)
         }
     }
 
     private fun addPlatformUser(platform: String, handle: String) {
         viewModelScope.launch {
-            usersRepository.addPlatformUser(platform, handle)
+            accountsRepository.addClistAccount(platform, handle)
         }
     }
 
@@ -85,7 +85,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun onUserAdded() {
         _showPopup.value = false
-        usersRepository.onAddUserComplete()
+        accountsRepository.onAddUserComplete()
     }
 
     private val _navigateToSettings = MutableLiveData<Boolean>()

@@ -5,36 +5,51 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 
 @Dao
-interface UserRatingsDao {
-    @Query("select * from DatabasePlatformUser")
-    fun getUsers() : LiveData<List<DatabasePlatformUser>?>
+interface UserAccountsDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(vararg databaseUsers: DatabasePlatformUser)
+    fun insertAccount(databaseAccount: DatabaseAccount): Long
+    
+    @Query("DELETE FROM DatabaseAccountContests WHERE accountId = :accountId")
+    fun deleteAccountData(accountId: Int)
 
-    @Query("delete from databaseplatformuser where handle = :handle")
-    fun deleteUser(handle: String)
+    @Query("DELETE FROM DatabaseAccount WHERE accountId = :accountId")
+    fun deleteUser(accountId: Int)
 
-    @Query("delete from DatabasePlatformUser")
+    @Query("DELETE FROM DatabaseAccount")
     fun nukeTable()
 
-    @Query ("select * from DatabasePlatformUser where handle = :handle")
-    fun getUser(handle: String): DatabasePlatformUser
+    @Transaction
+    @Query("SELECT * FROM DatabaseAccount")
+    fun getAccountsWithContests(): LiveData<List<AccountWithContests>>
+
+    @Transaction
+    fun deleteAccountAndData(accountId: Int) {
+        deleteUser(accountId)
+        deleteAccountData(accountId)
+    }
+}
+
+@Dao
+interface UserContestsDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAll(vararg databaseAccountContests: DatabaseAccountContests)
 }
 
 @Dao
 interface UpcomingContestsDao {
-    @Query("select * from DatabaseContest order by start")
+    @Query("select * FROM DatabaseContest ORDER BY start")
     fun getContests() : LiveData<List<DatabaseContest>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(vararg upcomingContests: DatabaseContest)
 }
 
-@Database(entities = [DatabasePlatformUser::class, DatabaseContest::class], version = 2)
+@Database(entities = [DatabaseAccount::class, DatabaseContest::class, DatabaseAccountContests::class], version = 3)
 abstract class AppDatabase: RoomDatabase() {
-    abstract val userRatingsDao: UserRatingsDao
+    abstract val userAccountsDao: UserAccountsDao
     abstract val upcomingContestsDao: UpcomingContestsDao
+    abstract val userContestsDao: UserContestsDao
 }
 
 private lateinit var INSTANCE: AppDatabase
@@ -44,7 +59,7 @@ fun getDatabase(context: Context): AppDatabase {
         if (!::INSTANCE.isInitialized) {
             INSTANCE = Room.databaseBuilder(context.applicationContext,
             AppDatabase::class.java,
-            "userRatings").fallbackToDestructiveMigration().build()
+            "accounts").fallbackToDestructiveMigration().build()
         }
     }
     return INSTANCE

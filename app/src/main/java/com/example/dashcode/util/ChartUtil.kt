@@ -1,6 +1,7 @@
 package com.example.dashcode.util
 
 import android.content.Context
+import android.util.Log
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.example.dashcode.R
@@ -43,7 +44,7 @@ class EpochDayFormatter: ValueFormatter() {
 
 class CustomMarkerView(context: Context?, layoutResource: Int) : MarkerView(context, layoutResource) {
 
-    val tvContent = findViewById<TextView>(R.id.marker_contest_name)
+    private val tvContent = findViewById<TextView>(R.id.marker_contest_name)
 
     override fun refreshContent(e: Entry?, highlight: Highlight?) {
         val markerData = e?.data as MarkerData
@@ -83,14 +84,14 @@ fun PlatformUser.loadChartData(context: Context) : LineData {
                 context,
                 getAccentColor(
                     this@loadChartData.platform,
-                    this@loadChartData.contests.last().newRating
+                    this@loadChartData.currentRating
                 )
             )
             fillDrawable = ContextCompat.getDrawable(
                 context,
                 getFillDrawable(
                     this@loadChartData.platform,
-                    this@loadChartData.contests.last().newRating
+                    this@loadChartData.currentRating
                 )
             )
 

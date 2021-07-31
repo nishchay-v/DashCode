@@ -10,18 +10,18 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 import retrofit2.http.Url
 
-val apiUser = "neonv"
-val apiKey = "ce035e53c8d8ccb0a90744a3fb41237b415e8e16"
+const val apiUser = "neonv"
+const val apiKey = "ce035e53c8d8ccb0a90744a3fb41237b415e8e16"
 val platforms = "codechef.com,codeforces.com,leetcode.com,topcoder.com,atcoder.jp,codingcompetitions.withgoogle.com,hackerearth.com,kaggle.com,spoj.com"
 
 interface CodeForcesService {
     @GET("user.rating")
-    fun getRatingsAsync(@Query("handle") username: String): Deferred<NetworkCodeForcesContainer>
+    fun getAccountWithContestsAsync(@Query("handle") username: String): Deferred<NetworkCodeForcesContainer>
 }
 
 interface CodeChefService {
     @GET()
-    fun getRatingsAsync(@Url username: String): Deferred<NetworkCodeChefContainer>
+    fun getAccountWithContestsAsync(@Url username: String): Deferred<NetworkCodeChefContainer>
 }
 
 interface CListContestService {
@@ -43,7 +43,7 @@ interface ClistAccountService {
         @Query("handle") handle: String,
         @Query("username") username: String = apiUser,
         @Query("api_key") key: String = apiKey
-    ): Deferred<NetworkAccountDetailContainer>
+    ): Deferred<NetworkClistAccountContainer>
 }
 
 interface ClistAccountContestService {

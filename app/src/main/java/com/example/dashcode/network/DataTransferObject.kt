@@ -1,9 +1,8 @@
 package com.example.dashcode.network
 
+import com.example.dashcode.database.DatabaseAccountContests
 import com.example.dashcode.database.DatabaseContest
-import com.example.dashcode.database.DatabasePlatformUser
-import com.example.dashcode.domain.CListContest
-import com.example.dashcode.domain.PlatformUser
+import com.example.dashcode.database.DatabaseAccount
 import com.example.dashcode.domain.UserContest
 import com.example.dashcode.domain.UserDetails
 import com.squareup.moshi.Json
@@ -27,20 +26,7 @@ data class NetworkContest(
     val href: String
 )
 
-//fun NetworkCListContainer.asDomainModel(): List<CListContest> =
-//    this.contestsList.map {
-//        CListContest(
-//            duration = it.duration,
-//            end = it.end,
-//            name = it.name,
-//            href = it.href,
-//            id = it.id,
-//            start = it.start,
-//            platform = it.platform
-//        )
-//    }
-
-fun NetworkCListContainer.asDatabaseModel(): Array<DatabaseContest> =
+fun NetworkCListContainer.asDatabaseAccountModel(): Array<DatabaseContest> =
     this.contestsList.map {
         DatabaseContest(
             duration = it.duration,
@@ -73,43 +59,24 @@ data class NetworkCodeForcesRatings(
     val newRating: Int
 )
 
-//fun NetworkCodeForcesContainer.asDomainModel(): PlatformUser {
-//    //TODO: this will crash for user with no contests
-//    return PlatformUser(
-//        handle = this.ratings[0].handle,
-//        platform = "codeforces.com",
-//        contests = this.ratings.map {
-//            UserContest(
-//                id = it.contestId.toString(),
-//                name = it.contestName,
-//                updateTime = it.ratingUpdateTimeSeconds,
-//                rank = it.rank,
-//                newRating = it.newRating,
-//                ratingChange = if(it.newRating - it.oldRating >= 0) "+${it.newRating - it.oldRating}"
-//                else (it.newRating - it.oldRating).toString()
-//            )
-//        }
-//    )
-//}
-
-fun NetworkCodeForcesContainer.asDatabaseModel(): DatabasePlatformUser {
-    return DatabasePlatformUser(
+fun NetworkCodeForcesContainer.asDatabaseAccountModel(): DatabaseAccount {
+    return DatabaseAccount(
         handle = this.ratings[0].handle,
-        platform = "codeforces.com",
-        contests = this.ratings.map {
-            UserContest(
-                id = it.contestId.toString(),
-                name = it.contestName,
-                updateTime = it.ratingUpdateTimeSeconds,
-                rank = it.rank,
-                newRating = it.newRating,
-                ratingChange = if(it.newRating - it.oldRating >= 0) "+${it.newRating - it.oldRating}"
-                else (it.newRating - it.oldRating).toString()
-            )
-        }
+        platform = "codeforces.com"
     )
 }
-
+fun NetworkCodeForcesContainer.asDatabaseAccountContestsModel(accountId: Int): Array<DatabaseAccountContests> =
+    ratings.map { networkContest ->
+        return@map DatabaseAccountContests(
+            accountId = accountId,
+            contestId = networkContest.contestId.toString(),
+            name = networkContest.contestName,
+            updateTime = networkContest.ratingUpdateTimeSeconds,
+            rank = networkContest.rank,
+            newRating = networkContest.newRating,
+            oldRating = networkContest.oldRating
+        )
+    }.toTypedArray()
 
 // For CodeChef User
 
@@ -143,53 +110,34 @@ data class NetworkCodeChefUserDetails(
     val institution: String
 )
 
-//fun NetworkCodeChefContainer.asDomainModel(): PlatformUser {
-//    var oldRating = 0
-//    return PlatformUser(
-//        handle = this.detailsNetwork.username,
-//        platform = "codechef.com",
-//        contests = this.ratings.map {
-//            val contest = UserContest(
-//                id = it.code,
-//                name = it.name,
-//                updateTime = timeToSeconds(it.updateTime),
-//                rank = it.rank,
-//                newRating = it.rating,
-//                ratingChange = if(it.rating - oldRating >= 0) "+${it.rating - oldRating}"
-//                else (it.rating - oldRating).toString()
-//            )
-//            oldRating = it.rating
-//            return@map contest
-//        }
-//    )
-//}
-
-fun NetworkCodeChefContainer.asDatabaseModel(): DatabasePlatformUser {
-    var oldRating = 0
-    return DatabasePlatformUser(
+fun NetworkCodeChefContainer.asDatabaseAccountModel(): DatabaseAccount = DatabaseAccount(
         handle = this.detailsNetwork.username,
-        platform = "codechef.com",
-        contests = this.ratings.map {
-            val contest = UserContest(
-                id = it.code,
-                name = it.name,
-                updateTime = timeToSeconds(it.updateTime),
-                rank = it.rank,
-                newRating = it.rating,
-                ratingChange = if(it.rating - oldRating >= 0) "+${it.rating - oldRating}"
-                else (it.rating - oldRating).toString()
-            )
-            oldRating = it.rating
-            return@map contest
-        }
+        platform = "codechef.com"
     )
+
+fun NetworkCodeChefContainer.asDatabaseAccountContestsModel(accountId: Int): Array<DatabaseAccountContests> {
+    var prevRating = 0
+    return ratings.map { networkContest ->
+        val contest = DatabaseAccountContests(
+            accountId = accountId,
+            contestId = networkContest.code,
+            name = networkContest.name,
+            updateTime = timeToSeconds(networkContest.updateTime),
+            rank = networkContest.rank,
+            newRating = networkContest.rating,
+            oldRating = prevRating
+        )
+        prevRating = networkContest.rating
+        return@map contest
+    }.toTypedArray()
 }
+
 
 
 // For cList accounts (leetcode and atcoder)
 
 @JsonClass(generateAdapter = true)
-data class NetworkAccountDetailContainer(
+data class NetworkClistAccountContainer(
     @Json(name = "objects")val accountDetail: List<NetworkAccountDetail>
 )
 
@@ -202,19 +150,18 @@ data class NetworkAccountDetail(
     @Json(name = "resource")val platform: String,
 )
 
-fun NetworkAccountDetailContainer.asDomainModel(): UserDetails =
+fun NetworkClistAccountContainer.asDomainModel(): UserDetails =
     UserDetails(
         handle = this.accountDetail[0].handle,
         name = this.accountDetail[0].name,
-        accountId = this.accountDetail[0].accountId,
+        clistId = this.accountDetail[0].accountId,
         platform = this.accountDetail[0].platform
     )
 
-fun NetworkAccountDetailContainer.withContestsAsDatabaseModel(contests: List<UserContest>): DatabasePlatformUser =
-    DatabasePlatformUser(
+fun NetworkClistAccountContainer.asDatabaseAccountModel(): DatabaseAccount =
+    DatabaseAccount(
         handle = this.accountDetail[0].handle,
-        platform = this.accountDetail[0].platform,
-        contests = contests
+        platform = this.accountDetail[0].platform
     )
 
     // For user's contests
@@ -230,35 +177,32 @@ data class NetworkUserContests(
     @Json(name="event")val name: String,
     @Json(name="place")val rank: Int?,
     val date: String,
-    @Json(name="old_rating")val oldRating: Int?,
     @Json(name="new_rating")val newRating: Int?,
     @Json(name="rating_change")val ratingChange: Int?
 )
 
-fun NetworkUserContestsContainer.asDomainModel(): List<UserContest> {
-    val contests = mutableListOf<UserContest>()
-    for (item in this.userContests) {
+fun NetworkUserContestsContainer.asDatabaseAccountContestsModel(accountId: Int): Array<DatabaseAccountContests> {
+    val contests = mutableListOf<DatabaseAccountContests>()
 
-        if (item.newRating == null) {
+    var oldRating = 0
+    for (networkContest in this.userContests) {
+
+        if (networkContest.newRating == null) {
             continue
         }
 
-        val rc = item.ratingChange ?: item.newRating
-        var rcString = if (rc > 0) "+$rc"
-        else rc.toString()
-
-        contests.add(
-            UserContest(
-                id = item.contestId.toString(),
-                name = item.name,
-                rank = item.rank ?: 0,
-                newRating = item.newRating,
-                ratingChange = rcString,
-                updateTime = timeToSeconds(item.date)
-            )
+        val contest = DatabaseAccountContests(
+            accountId = accountId,
+            contestId = networkContest.contestId.toString(),
+            name = networkContest.name,
+            rank = networkContest.rank ?: 0,
+            updateTime = timeToSeconds(networkContest.date),
+            newRating = networkContest.newRating,
+            oldRating = oldRating
         )
-
+        oldRating = networkContest.newRating
+        contests.add(contest)
     }
-    return contests
-}
 
+    return contests.toTypedArray()
+}

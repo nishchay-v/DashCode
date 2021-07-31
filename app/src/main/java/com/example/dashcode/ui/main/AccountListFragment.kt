@@ -34,8 +34,8 @@ class AccountListFragment : Fragment() {
 
         val layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
         binding.accountList.layoutManager = layoutManager
-        val adapter = AccountListAdapter(AccountListAdapter.AccountDeleteListener { handle->
-            viewModel.deleteUser(handle)
+        val adapter = AccountListAdapter(AccountListAdapter.AccountDeleteListener { id->
+            viewModel.deleteUser(id)
             Snackbar.make(requireView(), R.string.account_removed, Snackbar.LENGTH_LONG).show()
         })
         binding.accountList.adapter = adapter
@@ -92,7 +92,7 @@ class AccountListAdapter(val clickListener: AccountDeleteListener): ListAdapter<
         }
     }
 
-    class AccountDeleteListener(val clickListener: (userHandle: String) -> Unit) {
-        fun onClick(user: PlatformUser) = clickListener(user.handle)
+    class AccountDeleteListener(val clickListener: (accountId: Int) -> Unit) {
+        fun onClick(user: PlatformUser) = clickListener(user.accountId)
     }
 }

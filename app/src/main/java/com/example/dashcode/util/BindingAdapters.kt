@@ -29,8 +29,7 @@ fun durationHours(view: TextView, seconds: Int) {
 
 @BindingAdapter("platformRank")
 fun getRank(view: TextView, user: PlatformUser) {
-    view.text = getRank(user.platform, user.rating)
-//    view.setBackgroundColor()
+    view.text = getRank(user.platform, user.currentRating)
 }
 
 @BindingAdapter("dateText")
@@ -68,20 +67,3 @@ fun getRatingChangeText(view: TextView, change:String) {
 fun getSelectedPosition(spinner: Spinner): String {
     return spinner.selectedItem.toString()
 }
-
-private fun setSpinnerListener(spinner: Spinner, listener: InverseBindingListener) {
-    spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) = listener.onChange()
-        override fun onNothingSelected(adapterView: AdapterView<*>) = listener.onChange()
-    }
-}
-//
-//private fun setCurrentSelection(spinner: Spinner, selectedItem: HasNameField): Boolean {
-//    for (index in 0 until spinner.adapter.count) {
-//        if (spinner.getItemAtPosition(index) == selectedItem.name) {
-//            spinner.setSelection(index)
-//            return true
-//        }
-//    }
-//    return false
-//}
